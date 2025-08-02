@@ -122,7 +122,7 @@ const InterviewLive = () => {
               <span className="text-sm font-medium">Live Interview</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              {currentInterview.topic} • {currentInterview.difficulty}
+              {currentInterview.language} • {currentInterview.difficulty}
             </div>
           </div>
           

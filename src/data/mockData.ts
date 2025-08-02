@@ -182,7 +182,7 @@ export const mockInterviews: Interview[] = [
   }
 ];
 
-export const topics = ['JavaScript', 'React', 'Python', 'Node.js', 'TypeScript', 'SQL'];
+export const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript', 'Go', 'Rust', 'C#'];
 export const difficulties = ['easy', 'medium', 'hard'] as const;
 
 // Helper functions

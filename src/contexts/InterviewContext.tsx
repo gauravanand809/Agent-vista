@@ -10,8 +10,9 @@ interface UploadedFile {
 
 interface CurrentInterview {
   id: string;
-  topic: string;
+  language: string;
   difficulty: 'easy' | 'medium' | 'hard';
+  duration: number; // in minutes
   questions: Question[];
   currentQuestionIndex: number;
   answers: { questionId: string; answer: string }[];
@@ -19,12 +20,13 @@ interface CurrentInterview {
   isRecording: boolean;
   timeRemaining: number;
   resumeFile?: UploadedFile;
+  jobDescriptionText?: string;
   jobDescriptionFile?: UploadedFile;
 }
 
 interface InterviewContextType {
   currentInterview: CurrentInterview | null;
-  startInterview: (topic: string, difficulty: 'easy' | 'medium' | 'hard', resumeFile?: File, jobDescriptionFile?: File) => void;
+  startInterview: (language: string, difficulty: 'easy' | 'medium' | 'hard', duration: number, resumeFile?: File, jobDescriptionText?: string, jobDescriptionFile?: File) => void;
   submitAnswer: (answer: string) => void;
   nextQuestion: () => void;
   toggleRecording: () => void;
@@ -51,13 +53,14 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
   const { user } = useAuth();
   const [currentInterview, setCurrentInterview] = useState<CurrentInterview | null>(null);
 
-  const startInterview = (topic: string, difficulty: 'easy' | 'medium' | 'hard', resumeFile?: File, jobDescriptionFile?: File) => {
-    const questions = getQuestionsByTopic(topic, difficulty);
+  const startInterview = (language: string, difficulty: 'easy' | 'medium' | 'hard', duration: number, resumeFile?: File, jobDescriptionText?: string, jobDescriptionFile?: File) => {
+    const questions = getQuestionsByTopic(language, difficulty);
     
     const newInterview: CurrentInterview = {
       id: `interview-${Date.now()}`,
-      topic,
+      language,
       difficulty,
+      duration,
       questions,
       currentQuestionIndex: 0,
       answers: [],
@@ -69,6 +72,7 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
         size: resumeFile.size,
         type: resumeFile.type
       } : undefined,
+      jobDescriptionText,
       jobDescriptionFile: jobDescriptionFile ? {
         name: jobDescriptionFile.name,
         size: jobDescriptionFile.size,
@@ -159,12 +163,12 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
       answersWithScores.reduce((sum, answer) => sum + answer.score, 0) / answersWithScores.length
     );
 
-    const mockFeedback = generateMockFeedback(totalScore, currentInterview.topic);
+    const mockFeedback = generateMockFeedback(totalScore, currentInterview.language);
 
     const completedInterview: Interview = {
       id: currentInterview.id,
       userId: user.id,
-      topic: currentInterview.topic,
+      topic: currentInterview.language,
       difficulty: currentInterview.difficulty,
       questions: currentInterview.questions,
       answers: answersWithScores,
@@ -181,17 +185,17 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
     setCurrentInterview(null);
   };
 
-  const generateMockFeedback = (score: number, topic: string): string => {
+  const generateMockFeedback = (score: number, language: string): string => {
     if (score >= 90) {
-      return `Excellent performance! You demonstrated exceptional knowledge of ${topic}. You're ready for senior-level positions.`;
+      return `Excellent performance! You demonstrated exceptional knowledge of ${language}. You're ready for senior-level positions.`;
     } else if (score >= 80) {
-      return `Great job! Strong understanding of ${topic} concepts. Minor areas for improvement, but overall very solid.`;
+      return `Great job! Strong understanding of ${language} concepts. Minor areas for improvement, but overall very solid.`;
     } else if (score >= 70) {
-      return `Good performance! You have a solid foundation in ${topic}. Focus on practicing more advanced concepts.`;
+      return `Good performance! You have a solid foundation in ${language}. Focus on practicing more advanced concepts.`;
     } else if (score >= 60) {
-      return `Decent attempt! You understand the basics of ${topic}. Spend more time studying core concepts and practicing.`;
+      return `Decent attempt! You understand the basics of ${language}. Spend more time studying core concepts and practicing.`;
     } else {
-      return `Keep practicing! Review the fundamentals of ${topic} and try again when you feel more confident.`;
+      return `Keep practicing! Review the fundamentals of ${language} and try again when you feel more confident.`;
     }
   };
 
