@@ -1,73 +1,199 @@
-# Welcome to your Lovable project
+# AI Interview Web App
 
-## Project info
+A React 18 + TypeScript + TailwindCSS frontend application for AI-powered technical interview practice.
 
-**URL**: https://lovable.dev/projects/ba68c559-54cd-4605-ae6a-2ed60a700c4c
+## 🚀 Features
 
-## How can I edit this code?
+- **AI-Powered Interview Practice**: Practice technical interviews with intelligent questions
+- **Multiple Topics**: JavaScript, React, Python, Node.js, TypeScript, SQL
+- **Difficulty Levels**: Easy, Medium, Hard questions to match your skill level
+- **Voice Recording**: Record your answers with simulated audio functionality
+- **Real-time Feedback**: Get instant scoring and detailed feedback
+- **Progress Tracking**: Monitor your improvement over time
+- **Mobile-Responsive**: Works seamlessly on all devices
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18 with TypeScript
+- **Styling**: TailwindCSS with custom design system
+- **Build Tool**: Vite
+- **UI Components**: Shadcn/ui
+- **State Management**: React Context API
+- **Routing**: React Router DOM
+- **Icons**: Lucide React
+- **Date Handling**: date-fns
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ba68c559-54cd-4605-ae6a-2ed60a700c4c) and start prompting.
+## 📦 Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+src/
+├── components/
+│   ├── ui/                 # Reusable UI components
+│   ├── interview/          # Interview-specific components
+│   ├── Navbar.tsx         # Navigation component
+│   ├── Footer.tsx         # Footer component
+│   └── ProtectedRoute.tsx # Route protection
+├── contexts/
+│   ├── AuthContext.tsx    # Authentication state
+│   └── InterviewContext.tsx # Interview state
+├── data/
+│   └── mockData.ts        # Mock data for users, questions, interviews
+├── pages/
+│   ├── Landing.tsx        # Landing page
+│   ├── Login.tsx          # Login page
+│   ├── Signup.tsx         # Signup page
+│   ├── Dashboard.tsx      # User dashboard
+│   ├── InterviewSetup.tsx # Interview configuration
+│   ├── InterviewLive.tsx  # Live interview session
+│   └── InterviewResult.tsx # Results and feedback
+└── hooks/                 # Custom React hooks
+```
 
-**Use your preferred IDE**
+## 🎨 Design System
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+The app features a modern AI-themed design with:
+- Dark theme with blue and teal accents
+- Gradient backgrounds and glowing effects
+- Smooth animations and transitions
+- Mobile-first responsive design
+- Semantic color tokens for consistency
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🔐 Authentication
 
-Follow these steps:
+- Mock authentication system using local storage
+- Protected routes for interview functionality
+- Demo credentials:
+  - Email: `john@example.com`
+  - Password: `password123`
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 📱 Pages
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Landing Page (`/`)
+- Hero section with app introduction
+- Feature highlights
+- Call-to-action buttons for signup/login
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Authentication Pages
+- **Login** (`/login`): User authentication
+- **Signup** (`/signup`): New user registration
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Protected Pages
+- **Dashboard** (`/dashboard`): Overview of past interviews and quick stats
+- **Interview Setup** (`/interview/setup`): Topic and difficulty selection
+- **Interview Live** (`/interview/live`): Active interview session
+- **Interview Result** (`/interview/result`): Scores and feedback
+
+## 🎯 Interview Flow
+
+1. **Setup**: Choose topic (JavaScript, React, Python, etc.) and difficulty
+2. **Live Session**: Answer 5 questions with time limits
+3. **Recording**: Use voice recording or text input for answers
+4. **Results**: Get AI-generated scores and feedback
+
+## 🧪 Mock Data
+
+The app includes comprehensive mock data:
+- **Users**: Demo accounts with profiles
+- **Questions**: 50+ technical questions across topics and difficulties
+- **Interviews**: Sample completed interviews with scores and feedback
+
+## 🚦 Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd ai-interview-app
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Available Scripts
 
-**Use GitHub Codespaces**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎨 Customization
 
-## What technologies are used for this project?
+### Design System
+The design system is defined in:
+- `src/index.css` - CSS custom properties and component styles
+- `tailwind.config.ts` - Tailwind configuration and theme
 
-This project is built with:
+### Mock Data
+Modify `src/data/mockData.ts` to:
+- Add new interview questions
+- Change difficulty levels
+- Update user profiles
+- Customize feedback messages
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### UI Components
+All UI components are built with Shadcn/ui and can be customized in:
+- `src/components/ui/` - Base UI components
+- Custom variants defined in the design system
 
-## How can I deploy this project?
+## 🔧 Configuration
 
-Simply open [Lovable](https://lovable.dev/projects/ba68c559-54cd-4605-ae6a-2ed60a700c4c) and click on Share -> Publish.
+### Environment
+The app runs entirely on the frontend with no backend dependencies. All data is mocked and stored in localStorage for persistence.
 
-## Can I connect a custom domain to my Lovable project?
+### Responsive Design
+The app is fully responsive with breakpoints:
+- Mobile: < 768px
+- Tablet: 768px - 1024px
+- Desktop: > 1024px
 
-Yes, you can!
+## 🌟 Key Features Explained
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Voice Recording Simulation
+- Visual recording interface with start/stop controls
+- Timer display during recording
+- Playback simulation
+- Fallback to text input
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### AI Scoring System
+- Mock scoring algorithm with random but realistic scores
+- Detailed feedback based on score ranges
+- Question-by-question breakdown
+
+### Progress Tracking
+- Interview history with dates and scores
+- Average score calculation
+- Visual progress indicators
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For questions or issues, please check the documentation or create an issue in the repository.
+
+---
+
+Built with ❤️ using React, TypeScript, and TailwindCSS
