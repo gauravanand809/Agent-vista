@@ -6,21 +6,64 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import FileUpload from '@/components/ui/file-upload';
 import { topics, difficulties } from '@/data/mockData';
-import { ArrowLeft, Play, Clock, Target, Brain } from 'lucide-react';
+import { ArrowLeft, Play, Clock, Target, Brain, FileText, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const InterviewSetup = () => {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [jobDescriptionFile, setJobDescriptionFile] = useState<File | null>(null);
+  const [resumeError, setResumeError] = useState<string>('');
+  const [jobDescError, setJobDescError] = useState<string>('');
   const { startInterview } = useInterview();
   const navigate = useNavigate();
 
   const handleStartInterview = () => {
-    if (!selectedTopic) return;
+    if (!selectedTopic || !resumeFile || !jobDescriptionFile) return;
     
-    startInterview(selectedTopic, selectedDifficulty);
+    startInterview(selectedTopic, selectedDifficulty, resumeFile, jobDescriptionFile);
     navigate('/interview/live');
+  };
+
+  const validateFile = (file: File | null, setError: (error: string) => void): boolean => {
+    if (!file) return false;
+    
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please upload a PDF or DOCX file');
+      return false;
+    }
+    
+    if (file.size > maxSize) {
+      setError('File size must be less than 5MB');
+      return false;
+    }
+    
+    setError('');
+    return true;
+  };
+
+  const handleResumeSelect = (file: File | null) => {
+    if (file && validateFile(file, setResumeError)) {
+      setResumeFile(file);
+    } else if (!file) {
+      setResumeFile(null);
+      setResumeError('');
+    }
+  };
+
+  const handleJobDescSelect = (file: File | null) => {
+    if (file && validateFile(file, setJobDescError)) {
+      setJobDescriptionFile(file);
+    } else if (!file) {
+      setJobDescriptionFile(null);
+      setJobDescError('');
+    }
   };
 
   const getDifficultyInfo = (difficulty: string) => {
@@ -133,6 +176,39 @@ const InterviewSetup = () => {
               </RadioGroup>
             </div>
 
+            {/* File Uploads */}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <Label className="text-lg font-semibold">Upload Your Resume</Label>
+                </div>
+                <FileUpload
+                  label=""
+                  accept={['.pdf', '.docx', '.doc']}
+                  maxSize={5 * 1024 * 1024} // 5MB
+                  onFileSelect={handleResumeSelect}
+                  selectedFile={resumeFile}
+                  error={resumeError}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Briefcase className="h-5 w-5 text-primary" />
+                  <Label className="text-lg font-semibold">Upload Job Description</Label>
+                </div>
+                <FileUpload
+                  label=""
+                  accept={['.pdf', '.docx', '.doc']}
+                  maxSize={5 * 1024 * 1024} // 5MB
+                  onFileSelect={handleJobDescSelect}
+                  selectedFile={jobDescriptionFile}
+                  error={jobDescError}
+                />
+              </div>
+            </div>
+
             {/* Interview Info */}
             {selectedTopic && (
               <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
@@ -159,6 +235,18 @@ const InterviewSetup = () => {
                     <span>Estimated Time:</span>
                     <span className="font-medium text-foreground">15-25 minutes</span>
                   </div>
+                  {resumeFile && (
+                    <div className="flex justify-between">
+                      <span>Resume:</span>
+                      <span className="font-medium text-foreground">{resumeFile.name}</span>
+                    </div>
+                  )}
+                  {jobDescriptionFile && (
+                    <div className="flex justify-between">
+                      <span>Job Description:</span>
+                      <span className="font-medium text-foreground">{jobDescriptionFile.name}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -166,7 +254,7 @@ const InterviewSetup = () => {
             {/* Start Button */}
             <Button
               onClick={handleStartInterview}
-              disabled={!selectedTopic}
+              disabled={!selectedTopic || !resumeFile || !jobDescriptionFile}
               variant="hero"
               size="xl"
               className="w-full"
@@ -181,6 +269,7 @@ const InterviewSetup = () => {
         <Card className="mt-6 p-6 bg-accent/5 border-accent/20">
           <h3 className="font-semibold mb-3 text-accent">💡 Interview Tips</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
+            <li>• Upload your current resume and the job description for personalized questions</li>
             <li>• Find a quiet environment for optimal voice recording</li>
             <li>• Think out loud to demonstrate your problem-solving process</li>
             <li>• Take your time to understand each question fully</li>

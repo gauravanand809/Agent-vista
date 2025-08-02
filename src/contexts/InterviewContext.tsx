@@ -2,6 +2,12 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Question, Interview, getQuestionsByTopic } from '@/data/mockData';
 import { useAuth } from './AuthContext';
 
+interface UploadedFile {
+  name: string;
+  size: number;
+  type: string;
+}
+
 interface CurrentInterview {
   id: string;
   topic: string;
@@ -12,11 +18,13 @@ interface CurrentInterview {
   startTime: Date;
   isRecording: boolean;
   timeRemaining: number;
+  resumeFile?: UploadedFile;
+  jobDescriptionFile?: UploadedFile;
 }
 
 interface InterviewContextType {
   currentInterview: CurrentInterview | null;
-  startInterview: (topic: string, difficulty: 'easy' | 'medium' | 'hard') => void;
+  startInterview: (topic: string, difficulty: 'easy' | 'medium' | 'hard', resumeFile?: File, jobDescriptionFile?: File) => void;
   submitAnswer: (answer: string) => void;
   nextQuestion: () => void;
   toggleRecording: () => void;
@@ -43,7 +51,7 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
   const { user } = useAuth();
   const [currentInterview, setCurrentInterview] = useState<CurrentInterview | null>(null);
 
-  const startInterview = (topic: string, difficulty: 'easy' | 'medium' | 'hard') => {
+  const startInterview = (topic: string, difficulty: 'easy' | 'medium' | 'hard', resumeFile?: File, jobDescriptionFile?: File) => {
     const questions = getQuestionsByTopic(topic, difficulty);
     
     const newInterview: CurrentInterview = {
@@ -55,7 +63,17 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
       answers: [],
       startTime: new Date(),
       isRecording: false,
-      timeRemaining: questions[0]?.timeLimit || 180
+      timeRemaining: questions[0]?.timeLimit || 180,
+      resumeFile: resumeFile ? {
+        name: resumeFile.name,
+        size: resumeFile.size,
+        type: resumeFile.type
+      } : undefined,
+      jobDescriptionFile: jobDescriptionFile ? {
+        name: jobDescriptionFile.name,
+        size: jobDescriptionFile.size,
+        type: jobDescriptionFile.type
+      } : undefined
     };
     
     setCurrentInterview(newInterview);
