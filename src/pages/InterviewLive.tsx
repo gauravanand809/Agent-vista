@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import QuestionDisplay from '@/components/interview/QuestionDisplay';
 import AudioRecorder from '@/components/interview/AudioRecorder';
+import VideoPanel from '@/components/interview/VideoPanel';
+import ChatPanel from '@/components/interview/ChatPanel';
+import ProblemPanel from '@/components/interview/ProblemPanel';
+import CodeEditorPanel from '@/components/interview/CodeEditorPanel';
 import { ArrowRight, X, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -110,6 +114,7 @@ const InterviewLive = () => {
   const currentQuestion = currentInterview.questions[currentInterview.currentQuestionIndex];
   const currentAnswer = currentInterview.answers.find(a => a.questionId === currentQuestion.id);
   const hasAnswered = !!currentAnswer;
+  const isCodingQuestion = currentQuestion.type === 'coding';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
@@ -122,7 +127,7 @@ const InterviewLive = () => {
               <span className="text-sm font-medium">Live Interview</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              {currentInterview.language} • {currentInterview.difficulty}
+              {currentInterview.language} • {currentInterview.difficulty} • {isCodingQuestion ? 'Coding' : 'Conceptual'}
             </div>
           </div>
           
@@ -137,61 +142,88 @@ const InterviewLive = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Question Section */}
-          <div>
-            <QuestionDisplay
-              question={currentQuestion}
-              questionNumber={currentInterview.currentQuestionIndex + 1}
-              totalQuestions={currentInterview.questions.length}
-              timeRemaining={currentInterview.timeRemaining}
-            />
-          </div>
-
-          {/* Answer Section */}
-          <div>
-            <AudioRecorder
-              isRecording={currentInterview.isRecording}
-              onToggleRecording={toggleRecording}
-              onSubmitAnswer={handleSubmitAnswer}
-            />
+        {/* Dynamic Layout based on question type */}
+        {isCodingQuestion ? (
+          /* Coding Question Layout */
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            {/* Problem Statement */}
+            <div className="xl:col-span-1">
+              <ProblemPanel question={currentQuestion} />
+            </div>
             
-            {/* Answer Status */}
-            {hasAnswered && (
-              <Card className="mt-4 p-4 bg-success/10 border-success/20">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-success"></div>
-                  <span className="text-sm font-medium text-success">Answer submitted</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Preview: {currentAnswer.answer.substring(0, 100)}
-                  {currentAnswer.answer.length > 100 ? '...' : ''}
-                </p>
-              </Card>
-            )}
-
-            {/* Navigation */}
-            <div className="mt-6 flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                Question {currentInterview.currentQuestionIndex + 1} of {currentInterview.questions.length}
-              </div>
-              
-              <Button
-                onClick={handleNextQuestion}
-                disabled={!hasAnswered}
-                variant="hero"
-              >
-                {currentInterview.currentQuestionIndex < currentInterview.questions.length - 1 ? (
-                  <>
-                    Next Question
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                ) : (
-                  'Finish Interview'
-                )}
-              </Button>
+            {/* Code Editor */}
+            <div className="xl:col-span-1">
+              <CodeEditorPanel language={currentInterview.language} />
+            </div>
+            
+            {/* Video and Chat */}
+            <div className="xl:col-span-1 space-y-6">
+              <VideoPanel className="lg:h-64" />
+              <ChatPanel className="lg:h-64" />
             </div>
           </div>
+        ) : (
+          /* Normal Question Layout */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Video Section */}
+            <div>
+              <VideoPanel />
+            </div>
+
+            {/* Question and Chat Section */}
+            <div className="space-y-6">
+              <QuestionDisplay
+                question={currentQuestion}
+                questionNumber={currentInterview.currentQuestionIndex + 1}
+                totalQuestions={currentInterview.questions.length}
+                timeRemaining={currentInterview.timeRemaining}
+              />
+              
+              <ChatPanel className="lg:h-64" />
+              
+              <AudioRecorder
+                isRecording={currentInterview.isRecording}
+                onToggleRecording={toggleRecording}
+                onSubmitAnswer={handleSubmitAnswer}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Answer Status */}
+        {hasAnswered && (
+          <Card className="mt-6 p-4 bg-success/10 border-success/20">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 rounded-full bg-success"></div>
+              <span className="text-sm font-medium text-success">Answer submitted</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              Preview: {currentAnswer.answer.substring(0, 100)}
+              {currentAnswer.answer.length > 100 ? '...' : ''}
+            </p>
+          </Card>
+        )}
+
+        {/* Navigation */}
+        <div className="mt-6 flex justify-between items-center">
+          <div className="text-sm text-muted-foreground">
+            Question {currentInterview.currentQuestionIndex + 1} of {currentInterview.questions.length}
+          </div>
+          
+          <Button
+            onClick={handleNextQuestion}
+            disabled={!hasAnswered}
+            variant="hero"
+          >
+            {currentInterview.currentQuestionIndex < currentInterview.questions.length - 1 ? (
+              <>
+                Next Question
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </>
+            ) : (
+              'Finish Interview'
+            )}
+          </Button>
         </div>
 
         {/* Warning for low time */}

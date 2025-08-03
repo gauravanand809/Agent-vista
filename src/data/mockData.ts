@@ -15,6 +15,13 @@ export interface Question {
   question: string;
   expectedAnswer: string;
   timeLimit: number; // in seconds
+  type?: 'normal' | 'coding';
+  problemStatement?: string;
+  inputFormat?: string;
+  outputFormat?: string;
+  sampleInput?: string;
+  sampleOutput?: string;
+  constraints?: string;
 }
 
 export interface Interview {
@@ -128,6 +135,37 @@ export const mockQuestions: Question[] = [
     question: 'What are decorators in Python and how do you use them?',
     expectedAnswer: 'Decorators modify or extend function behavior without changing the function itself using @decorator syntax.',
     timeLimit: 300
+  },
+  // Coding Questions
+  {
+    id: 'js-coding-1',
+    topic: 'JavaScript',
+    difficulty: 'easy',
+    type: 'coding',
+    question: 'Two Sum',
+    problemStatement: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
+    inputFormat: 'First line contains the array of integers, second line contains the target integer.',
+    outputFormat: 'Return an array of two indices.',
+    sampleInput: '[2,7,11,15]\n9',
+    sampleOutput: '[0,1]',
+    constraints: '2 <= nums.length <= 10^4, -10^9 <= nums[i] <= 10^9',
+    expectedAnswer: 'function twoSum(nums, target) { const map = new Map(); for (let i = 0; i < nums.length; i++) { const complement = target - nums[i]; if (map.has(complement)) { return [map.get(complement), i]; } map.set(nums[i], i); } }',
+    timeLimit: 900
+  },
+  {
+    id: 'python-coding-1',
+    topic: 'Python',
+    difficulty: 'medium',
+    type: 'coding',
+    question: 'Valid Parentheses',
+    problemStatement: 'Given a string s containing just the characters "(", ")", "{", "}", "[" and "]", determine if the input string is valid.',
+    inputFormat: 'A string containing only parentheses characters.',
+    outputFormat: 'Return True if valid, False otherwise.',
+    sampleInput: '()[]{}',
+    sampleOutput: 'True',
+    constraints: '1 <= s.length <= 10^4',
+    expectedAnswer: 'def isValid(s): stack = []; mapping = {")": "(", "}": "{", "]": "["}; for char in s: if char in mapping: if not stack or stack.pop() != mapping[char]: return False; else: stack.append(char); return not stack',
+    timeLimit: 900
   }
 ];
 
