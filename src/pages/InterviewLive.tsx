@@ -112,6 +112,21 @@ const InterviewLive = () => {
   }
 
   const currentQuestion = currentInterview.questions[currentInterview.currentQuestionIndex];
+  
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">No questions available</h2>
+          <p className="text-muted-foreground">Please return to setup and try again.</p>
+          <Button onClick={() => navigate('/interview/setup')} className="mt-4">
+            Return to Setup
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
   const currentAnswer = currentInterview.answers.find(a => a.questionId === currentQuestion.id);
   const hasAnswered = !!currentAnswer;
   const isCodingQuestion = currentQuestion.type === 'coding';
