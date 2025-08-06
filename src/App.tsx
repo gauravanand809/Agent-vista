@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { InterviewProvider } from "@/contexts/InterviewContext";
+import { InterviewProvider } from "@/features/interview/context";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,10 +15,10 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import InterviewSetup from "./pages/InterviewSetup";
-import InterviewLive from "./pages/InterviewLive";
-import InterviewResult from "./pages/InterviewResult";
+import { InterviewSetup, InterviewLive, InterviewResult } from "./features/interview";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -51,26 +51,41 @@ const App = () => (
                 <Route path="/landing" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/interview/setup" element={
-                  <ProtectedRoute>
-                    <InterviewSetup />
-                  </ProtectedRoute>
-                } />
-                <Route path="/interview/live" element={
-                  <ProtectedRoute>
-                    <InterviewLive />
-                  </ProtectedRoute>
-                } />
-                <Route path="/interview/result" element={
-                  <ProtectedRoute>
-                    <InterviewResult />
-                  </ProtectedRoute>
-                } />
+                <Route path="/forget" element={<ForgotPassword />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/interview/setup"
+                  element={
+                    <ProtectedRoute>
+                      <InterviewSetup />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/interview/live"
+                  element={
+                    <ProtectedRoute>
+                      <InterviewLive />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/interview/result"
+                  element={
+                    <ProtectedRoute>
+                      <InterviewResult />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

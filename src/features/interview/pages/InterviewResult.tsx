@@ -1,10 +1,11 @@
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import ResultCard from '@/components/interview/ResultCard';
-import { ArrowLeft, Home, RotateCcw, Plus } from 'lucide-react';
-import { Interview } from '@/data/mockData';
-import { useInterview } from '@/contexts/InterviewContext';
+import { ArrowLeft, Home } from 'lucide-react';
+import { Interview } from '@/features/interview/types';
+import { useInterview } from '@/features/interview/context';
+import { ScoreDisplay, QuestionBreakdown, FeedbackSection, ActionButtons } from '@/features/interview/components/result';
+import { ResultCard } from '@/features/interview/components/ui';
 
 const InterviewResult = () => {
   const location = useLocation();
@@ -21,7 +22,7 @@ const InterviewResult = () => {
     resetInterview();
     navigate('/interview/setup', { 
       state: { 
-        preselectedTopic: interview.topic, 
+        preselectedRole: interview.role, 
         preselectedDifficulty: interview.difficulty 
       } 
     });
@@ -57,11 +58,20 @@ const InterviewResult = () => {
             </div>
           </div>
 
-          {/* Results */}
-          <ResultCard 
-            interview={interview}
+          {/* Overall Score and Details */}
+          <ScoreDisplay interview={interview} />
+
+          {/* Question Breakdown */}
+          <QuestionBreakdown interview={interview} />
+
+          {/* Feedback */}
+          <FeedbackSection interview={interview} />
+
+          {/* Action Buttons */}
+          <ActionButtons
             onRetry={handleRetry}
             onNewInterview={handleNewInterview}
+            onBackToDashboard={handleBackToDashboard}
           />
 
           {/* Additional Actions */}
@@ -78,16 +88,6 @@ const InterviewResult = () => {
                 <Button variant="outline" onClick={handleBackToDashboard}>
                   <Home className="h-4 w-4 mr-2" />
                   Dashboard
-                </Button>
-                
-                <Button variant="ghost" onClick={handleRetry}>
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Retry
-                </Button>
-                
-                <Button variant="hero" onClick={handleNewInterview}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Interview
                 </Button>
               </div>
             </div>

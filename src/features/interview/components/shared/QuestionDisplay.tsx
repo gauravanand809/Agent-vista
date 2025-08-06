@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Question } from '@/data/mockData';
+import { Question } from '@/data/interviewQuestions';
 import { Clock, MessageSquare } from 'lucide-react';
 
 interface QuestionDisplayProps {

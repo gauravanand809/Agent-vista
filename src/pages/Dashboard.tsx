@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Play, Clock, Trophy, TrendingUp, Calendar, Target } from 'lucide-react';
-import { getUserInterviews } from '@/data/mockData';
+import { getUserInterviews } from '@/features/interview/data/interviewQuestions';
 import { format } from 'date-fns';
 
 const Dashboard = () => {
@@ -134,7 +134,7 @@ const Dashboard = () => {
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 rounded-full bg-primary"></div>
-                        <span className="font-medium">{interview.topic}</span>
+                        <span className="font-medium">{interview.role}</span>
                       </div>
                     </TableCell>
                     <TableCell>

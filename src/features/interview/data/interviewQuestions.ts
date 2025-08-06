@@ -1,16 +1,9 @@
-// Mock data for AI Interview App
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  createdAt: string;
-}
+// Interview Questions Data for AI Interview App
 
 export interface Question {
   id: string;
   topic: string;
+  role: string; // Changed from 'topic' to 'role'
   difficulty: 'easy' | 'medium' | 'hard';
   question: string;
   expectedAnswer: string;
@@ -27,7 +20,7 @@ export interface Question {
 export interface Interview {
   id: string;
   userId: string;
-  topic: string;
+  role: string; // Changed from 'topic' to 'role'
   difficulty: 'easy' | 'medium' | 'hard';
   questions: Question[];
   answers: {
@@ -41,29 +34,12 @@ export interface Interview {
   status: 'completed' | 'in-progress' | 'abandoned';
 }
 
-// Mock Users
-export const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    password: 'password123',
-    createdAt: '2024-01-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    password: 'password123',
-    createdAt: '2024-01-10T14:20:00Z'
-  }
-];
-
 // Mock Questions
 export const mockQuestions: Question[] = [
-  // JavaScript Questions
+  // Frontend Developer Questions
   {
-    id: 'js-1',
+    id: 'frontend-1',
+    role: 'Frontend Developer',
     topic: 'JavaScript',
     difficulty: 'easy',
     question: 'What is the difference between let, const, and var in JavaScript?',
@@ -71,7 +47,8 @@ export const mockQuestions: Question[] = [
     timeLimit: 180
   },
   {
-    id: 'js-2',
+    id: 'frontend-2',
+    role: 'Frontend Developer',
     topic: 'JavaScript',
     difficulty: 'medium',
     question: 'Explain event bubbling and event capturing in JavaScript.',
@@ -79,41 +56,18 @@ export const mockQuestions: Question[] = [
     timeLimit: 240
   },
   {
-    id: 'js-3',
-    topic: 'JavaScript',
-    difficulty: 'hard',
-    question: 'What are closures in JavaScript and why are they useful?',
-    expectedAnswer: 'Closures allow inner functions to access outer function variables even after outer function returns.',
-    timeLimit: 300
-  },
-  // React Questions
-  {
-    id: 'react-1',
-    topic: 'React',
-    difficulty: 'easy',
-    question: 'What is JSX and why do we use it in React?',
-    expectedAnswer: 'JSX is a syntax extension that allows writing HTML-like code in JavaScript components.',
-    timeLimit: 180
-  },
-  {
-    id: 'react-2',
-    topic: 'React',
-    difficulty: 'medium',
-    question: 'Explain the difference between state and props in React.',
-    expectedAnswer: 'State is internal component data that can change. Props are external data passed from parent components.',
-    timeLimit: 240
-  },
-  {
-    id: 'react-3',
+    id: 'frontend-3',
+    role: 'Frontend Developer',
     topic: 'React',
     difficulty: 'hard',
     question: 'What are React hooks and how do they change the way we write components?',
     expectedAnswer: 'Hooks allow functional components to use state and lifecycle methods previously only available in class components.',
     timeLimit: 300
   },
-  // Python Questions
+  // Backend Developer Questions
   {
-    id: 'python-1',
+    id: 'backend-1',
+    role: 'Backend Developer',
     topic: 'Python',
     difficulty: 'easy',
     question: 'What is the difference between lists and tuples in Python?',
@@ -121,7 +75,8 @@ export const mockQuestions: Question[] = [
     timeLimit: 180
   },
   {
-    id: 'python-2',
+    id: 'backend-2',
+    role: 'Backend Developer',
     topic: 'Python',
     difficulty: 'medium',
     question: 'Explain list comprehensions in Python with an example.',
@@ -129,16 +84,46 @@ export const mockQuestions: Question[] = [
     timeLimit: 240
   },
   {
-    id: 'python-3',
-    topic: 'Python',
+    id: 'backend-3',
+    role: 'Backend Developer',
+    topic: 'Databases',
     difficulty: 'hard',
-    question: 'What are decorators in Python and how do you use them?',
-    expectedAnswer: 'Decorators modify or extend function behavior without changing the function itself using @decorator syntax.',
+    question: 'Explain ACID properties in the context of database transactions.',
+    expectedAnswer: 'ACID stands for Atomicity, Consistency, Isolation, Durability. These properties ensure database transactions are reliable.',
+    timeLimit: 300
+  },
+  // Full Stack Developer Questions
+  {
+    id: 'fullstack-1',
+    role: 'Full Stack Developer',
+    topic: 'JavaScript',
+    difficulty: 'easy',
+    question: 'What is REST and what are its key principles?',
+    expectedAnswer: 'REST is an architectural style for networked applications. Key principles include statelessness, client-server, cacheable, uniform interface.',
+    timeLimit: 180
+  },
+  {
+    id: 'fullstack-2',
+    role: 'Full Stack Developer',
+    topic: 'Node.js',
+    difficulty: 'medium',
+    question: 'What is the event loop in Node.js?',
+    expectedAnswer: 'The event loop is what allows Node.js to perform non-blocking I/O operations despite being single-threaded.',
+    timeLimit: 240
+  },
+  {
+    id: 'fullstack-3',
+    role: 'Full Stack Developer',
+    topic: 'Docker',
+    difficulty: 'hard',
+    question: 'Explain the difference between a Docker image and a Docker container.',
+    expectedAnswer: 'A Docker image is a read-only template with instructions for creating a Docker container. A container is a runnable instance of an image.',
     timeLimit: 300
   },
   // Coding Questions
   {
-    id: 'js-coding-1',
+    id: 'coding-frontend-1',
+    role: 'Frontend Developer',
     topic: 'JavaScript',
     difficulty: 'easy',
     type: 'coding',
@@ -153,7 +138,8 @@ export const mockQuestions: Question[] = [
     timeLimit: 900
   },
   {
-    id: 'python-coding-1',
+    id: 'coding-backend-1',
+    role: 'Backend Developer',
     topic: 'Python',
     difficulty: 'medium',
     type: 'coding',
@@ -174,13 +160,13 @@ export const mockInterviews: Interview[] = [
   {
     id: 'interview-1',
     userId: '1',
-    topic: 'JavaScript',
+    role: 'Frontend Developer',
     difficulty: 'medium',
     questions: [mockQuestions[0], mockQuestions[1], mockQuestions[2]],
     answers: [
-      { questionId: 'js-1', answer: 'let and const are block scoped...', score: 85 },
-      { questionId: 'js-2', answer: 'Event bubbling means...', score: 78 },
-      { questionId: 'js-3', answer: 'Closures are...', score: 82 }
+      { questionId: 'frontend-1', answer: 'let and const are block scoped...', score: 85 },
+      { questionId: 'frontend-2', answer: 'Event bubbling means...', score: 78 },
+      { questionId: 'frontend-3', answer: 'Hooks allow functional components...', score: 82 }
     ],
     totalScore: 82,
     feedback: 'Great understanding of JavaScript fundamentals. Focus on explaining event handling in more detail.',
@@ -190,62 +176,64 @@ export const mockInterviews: Interview[] = [
   {
     id: 'interview-2',
     userId: '1',
-    topic: 'React',
+    role: 'Backend Developer',
     difficulty: 'easy',
     questions: [mockQuestions[3], mockQuestions[4]],
     answers: [
-      { questionId: 'react-1', answer: 'JSX allows us to write...', score: 90 },
-      { questionId: 'react-2', answer: 'State is for internal data...', score: 88 }
+      { questionId: 'backend-1', answer: 'Lists can be changed...', score: 90 },
+      { questionId: 'backend-2', answer: 'List comprehensions are...', score: 88 }
     ],
     totalScore: 89,
-    feedback: 'Excellent grasp of React basics. Ready to move to intermediate topics.',
+    feedback: 'Excellent grasp of Python basics. Ready to move to intermediate topics.',
     completedAt: '2024-01-18T11:30:00Z',
     status: 'completed'
   },
   {
     id: 'interview-3',
     userId: '1',
-    topic: 'Python',
+    role: 'Full Stack Developer',
     difficulty: 'hard',
     questions: [mockQuestions[6], mockQuestions[7], mockQuestions[8]],
     answers: [
-      { questionId: 'python-1', answer: 'Lists can be changed...', score: 92 },
-      { questionId: 'python-2', answer: 'List comprehensions are...', score: 75 },
-      { questionId: 'python-3', answer: 'Decorators modify functions...', score: 70 }
+      { questionId: 'fullstack-1', answer: 'REST is an architectural style...', score: 92 },
+      { questionId: 'fullstack-2', answer: 'The event loop is what allows...', score: 75 },
+      { questionId: 'fullstack-3', answer: 'A Docker image is a read-only template...', score: 70 }
     ],
     totalScore: 79,
-    feedback: 'Strong Python knowledge. Work on advanced concepts like decorators.',
+    feedback: 'Strong knowledge across the stack. Work on advanced concepts like Docker.',
     completedAt: '2024-01-15T09:15:00Z',
     status: 'completed'
   }
 ];
 
-export const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript', 'Go', 'Rust', 'C#'];
+export const roles = [
+  "Frontend Developer",
+  "Backend Developer",
+  "Full Stack Developer",
+  "DevOps Engineer",
+  "Mobile App Developer",
+  "Data Engineer",
+  "Machine Learning Engineer",
+  "Embedded Systems Developer",
+  "Game Developer",
+  "Cloud Engineer",
+  "Site Reliability Engineer",
+  "Security Engineer",
+  "QA Engineer",
+  "Software Architect",
+  "AR/VR Developer",
+  "Others"
+];
+
 export const difficulties = ['easy', 'medium', 'hard'] as const;
 
 // Helper functions
-export const getQuestionsByTopic = (topic: string, difficulty: string): Question[] => {
+export const getQuestionsByRole = (role: string, difficulty: string): Question[] => {
   return mockQuestions
-    .filter(q => q.topic === topic && q.difficulty === difficulty)
+    .filter(q => q.role === role && q.difficulty === difficulty)
     .slice(0, 5); // Limit to 5 questions per interview
 };
 
 export const getUserInterviews = (userId: string): Interview[] => {
   return mockInterviews.filter(interview => interview.userId === userId);
-};
-
-export const authenticateUser = (email: string, password: string): User | null => {
-  return mockUsers.find(user => user.email === email && user.password === password) || null;
-};
-
-export const createUser = (name: string, email: string, password: string): User => {
-  const newUser: User = {
-    id: Date.now().toString(),
-    name,
-    email,
-    password,
-    createdAt: new Date().toISOString()
-  };
-  mockUsers.push(newUser);
-  return newUser;
 };

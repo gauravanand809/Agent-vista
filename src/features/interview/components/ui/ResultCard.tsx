@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Interview } from '@/data/mockData';
+import { Interview } from '@/data/interviewQuestions';
 import { Trophy, Target, Clock, TrendingUp, ThumbsUp, AlertCircle } from 'lucide-react';
 
 interface ResultCardProps {
@@ -61,7 +61,7 @@ const ResultCard = ({ interview, onRetry, onNewInterview }: ResultCardProps) => 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 text-center">
           <Target className="h-6 w-6 mx-auto mb-2 text-primary" />
-          <div className="text-lg font-semibold">{interview.topic}</div>
+          <div className="text-lg font-semibold">{interview.role}</div>
           <div className="text-sm text-muted-foreground capitalize">{interview.difficulty}</div>
         </Card>
         
@@ -122,7 +122,7 @@ const ResultCard = ({ interview, onRetry, onNewInterview }: ResultCardProps) => 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
         <Button variant="outline" onClick={onRetry} className="flex-1">
-          Retry Same Topic
+          Retry Same Role
         </Button>
         <Button variant="hero" onClick={onNewInterview} className="flex-1">
           Start New Interview

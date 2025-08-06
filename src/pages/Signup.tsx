@@ -84,11 +84,11 @@ const Signup = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-secondary/20 to-background">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 text-muted-foreground hover:text-primary mb-4">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to home</span>
           </Link>
+        <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-primary mb-4">
             <Brain className="h-8 w-8 text-primary-foreground" />
           </div>

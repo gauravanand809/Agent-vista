@@ -1,28 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Question, Interview, getQuestionsByTopic } from '@/data/mockData';
-import { useAuth } from './AuthContext';
-
-interface UploadedFile {
-  name: string;
-  size: number;
-  type: string;
-}
-
-interface CurrentInterview {
-  id: string;
-  language: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  duration: number; // in minutes
-  questions: Question[];
-  currentQuestionIndex: number;
-  answers: { questionId: string; answer: string }[];
-  startTime: Date;
-  isRecording: boolean;
-  timeRemaining: number;
-  resumeFile?: UploadedFile;
-  jobDescriptionText?: string;
-  jobDescriptionFile?: UploadedFile;
-}
+import { getQuestionsByRole } from '@/features/interview/data';
+import { Question, Interview, UploadedFile, CurrentInterview } from '@/features/interview/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface InterviewContextType {
   currentInterview: CurrentInterview | null;
@@ -54,7 +33,7 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
   const [currentInterview, setCurrentInterview] = useState<CurrentInterview | null>(null);
 
   const startInterview = (language: string, difficulty: 'easy' | 'medium' | 'hard', duration: number, resumeFile?: File, jobDescriptionText?: string, jobDescriptionFile?: File) => {
-    const questions = getQuestionsByTopic(language, difficulty);
+    const questions = getQuestionsByRole(language, difficulty);
     
     const newInterview: CurrentInterview = {
       id: `interview-${Date.now()}`,
@@ -168,7 +147,7 @@ export const InterviewProvider: React.FC<InterviewProviderProps> = ({ children }
     const completedInterview: Interview = {
       id: currentInterview.id,
       userId: user.id,
-      topic: currentInterview.language,
+      role: currentInterview.language,
       difficulty: currentInterview.difficulty,
       questions: currentInterview.questions,
       answers: answersWithScores,
