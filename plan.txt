@@ -1,0 +1,298 @@
+Thinking:**Developing the AI Integration** I'm currently focused on the feasibility of integrating an AI agent into the existing interview platform. The plan is to have this agent control the meeting flow and read relevant files. This would be a game-changer, but it means major updates to both the user interface and backend are necessary. I need to break down the user stories to see what we can do, and make sure we can do it.**Planning the Integration Scope** I'm now diving into the user stories to define the scope of the AI agent integration. Currently, my focus is on breaking down the functionalities: meeting setup, agent control during the session, and the method for reading files. Specifically, I'm analyzing the existing architecture, especially the `InterviewLive.tsx`, `VideoPanel.tsx`, and `AudioRecorder.tsx` components. Then I will determine the necessary updates in the `main.py`, the routes, and the business logic files to integrate the AI agent.**Designing the AI Agent's Role** I'm now exploring the core functionalities of the AI agent within the interview process. The focus is on three key areas: meeting setup and control, integrating file reading for question retrieval, and handling real-time audio/text processing for user responses and performance evaluation. I'm leaning toward defining the `ai_agent_service.py` to manage session initialization, question generation, and the processing of user inputs. The goal is to create a robust and dynamic interview experience.**Planning AI Integration Details** I'm now expanding the plan for the AI integration, focusing on backend components and frontend adaptations. I've sketched a `ai_agent_service.py` service to manage meeting flow and file reading. This will interface with a new `interview_agent.py` endpoint in `server/app/router` for frontend communication. The backend must handle question retrieval (from database or file) and any user uploads. I'll need to update `InterviewSetup.tsx` and `InterviewLive.tsx` to include an option to initiate an interview with the AI.**Developing API Endpoints** I'm currently working on defining and implementing the necessary API endpoints for the AI agent integration. I've started the `interview_agent.py` endpoint in `server/app/router` to handle communication with the frontend. I plan to use the existing `main.py` and service files for file uploads, question retrieval, and audio/text processing by integrating the new AI agent service. The next step is fleshing out those services.**Detailing the Core Integration** I've been developing a detailed roadmap for integrating the AI agent. The focus is now on mapping out the `ai_agent_service.py` to handle interview initialization, question retrieval, user audio/text processing, and performance feedback. I'm also planning the necessary database modifications to store interview states. This aims to create a dynamic interview experience with an intelligent assistant.**Mapping the Integration Scope** I'm currently structuring the AI integration plan, starting with backend components. I will create an `ai_agent_service.py` to handle interview initialization, question retrieval (database or files), and user audio/text processing. I'll need to define `server/app/router/interview_agent.py` to communicate with the frontend and integrate file upload functionality and update `main.py`. This is to make sure we're on the right track for the AI's role.‎
+
+Integrating an AI agent to conduct interviews and control the meeting is a significant feature. Based on your current setup, this will involve modifications to both the frontend (React) and backend (FastAPI).
+
+Here's a high-level plan outlining the necessary steps and the files likely to be involved:
+
+__Phase 1: Backend - AI Agent Core & Meeting Management__
+
+1. __AI Agent Logic__:
+
+   - __File__: `server/app/services/ai_agent_service.py` (New file)
+
+   - __What to do__: This file will house the core logic for your AI agent. It will contain functions for:
+
+     - Initializing an interview session with specific parameters (role, difficulty, duration).
+     - Generating interview questions based on the selected topic/role.
+     - Processing user input (e.g., transcribing speech to text, analyzing text responses).
+     - Evaluating user performance and providing feedback.
+     - Managing the flow of the interview (e.g., deciding when to ask the next question, when to end the interview).
+     - Integrating with external AI models (e.g., OpenAI API, custom NLP models).
+
+2. __Meeting Control API Endpoints__:
+
+   - __File__: `server/app/router/interview_agent.py` (New file)
+
+   - __What to do__: Define new API routes that the frontend will use to communicate with the AI agent. Examples include:
+
+     - `/api/interview/ai/start`: To initiate an AI-controlled interview session.
+     - `/api/interview/ai/send_audio`: To send user's audio stream to the AI agent for processing.
+     - `/api/interview/ai/send_text`: To send user's text input to the AI agent.
+     - `/api/interview/ai/get_response`: To retrieve the AI agent's text/audio responses.
+     - `/api/interview/ai/end`: To terminate the interview.
+
+3. __Main Application Integration__:
+
+   - __File__: `server/app/main.py`
+   - __What to do__: Register the new `interview_agent.py` router with your FastAPI application. You might also need to configure CORS settings to allow communication from your frontend.
+
+4. __Data Models__:
+
+   - __File__: `server/app/models/interview_session.py` (New file, or extend existing models)
+   - __What to do__: Define Pydantic models for the data structures related to AI interview sessions, including inputs, outputs, and session state.
+   - __File__: `server/app/database/mongo.py`
+   - __What to do__: Update your database schema and functions to store and retrieve AI interview session data, user responses, and agent feedback.
+
+5. __File Reading Capability (Backend)__:
+
+   - __Interview Questions__: If the AI agent needs to access interview questions, you'll need a mechanism to load them on the backend. You could:
+
+     - Read from a JSON file (e.g., `server/app/data/interview_questions.json`).
+     - Fetch from a database.
+
+   - __User-uploaded files__: If the agent needs to read user-uploaded documents (e.g., resumes, code files for a coding interview), you'll need:
+
+     - __File__: `server/app/router/file_upload.py` (New file)
+     - __What to do__: Implement API endpoints for secure file uploads and storage on the server.
+     - __File__: `server/app/services/file_processing_service.py` (New file)
+     - __What to do__: Implement logic to read and parse the content of uploaded files, making it accessible to the AI agent.
+
+__Phase 2: Frontend - User Interface for AI Agent Meeting__
+
+1. __Interview Setup__:
+
+   - __File__: `src/features/interview/pages/InterviewSetup.tsx`
+   - __What to do__: Add an option for the user to select an "AI Interview" mode. This might involve new UI elements like a toggle or a separate button.
+
+2. __Live Interview Interface__:
+
+   - __File__: `src/features/interview/pages/InterviewLive.tsx`
+
+   - __What to do__: This page will be the main interface for the AI interview. You'll need to:
+
+     - Integrate real-time communication (WebRTC or similar) to capture user's audio/video and send it to the backend.
+     - Display the AI agent's responses (text, and potentially a visual representation if you implement one).
+     - Manage the state of the interview (e.g., current question, timer).
+
+3. __Shared Components Adaptation__:
+
+   - __File__: `src/features/interview/components/shared/VideoPanel.tsx`
+   - __What to do__: Adapt this component to display the user's video feed and potentially a placeholder or visual representation for the AI agent.
+   - __File__: `src/features/interview/components/shared/AudioRecorder.tsx`
+   - __What to do__: Ensure this component can capture user audio and stream it to the backend API.
+   - __File__: `src/features/interview/components/shared/ChatPanel.tsx`
+   - __What to do__: Modify this component to display the AI agent's text-based questions and responses, as well as the user's transcribed input.
+   - __File__: `src/features/interview/components/shared/ProblemPanel.tsx` and `src/features/interview/components/shared/QuestionDisplay.tsx`
+   - __What to do__: These components will be used to display the questions generated by the AI agent.
+
+4. __API Client__:
+
+   - __File__: `src/lib/api.ts`
+   - __What to do__: Add new functions to make API calls to the new backend endpoints for AI agent interaction.
+
+5. __Types__:
+
+   - __File__: `src/features/interview/types/interview.ts`
+   - __What to do__: Update existing types or add new ones to accommodate the AI agent's data structures and interview state.
+
+__Clarifying Questions:__
+
+To help me refine this plan and provide more specific guidance, please clarify the following:
+
+1. __AI Agent Interaction Type__: Will the AI agent primarily interact via text (chatbot-like), or will it involve voice (speech-to-text and text-to-speech), or even video (with a virtual avatar or a static image)?
+
+2. __"Read Files" Specifics__: When you mention the agent should "read files," what kind of files are these?
+
+   - Are they pre-defined interview questions?
+   - Are they documents uploaded by the user (e.g., resumes, project descriptions)?
+   - Are they code files that the user writes during a coding interview?
+
+3. __Meeting Technology__: Do you have a preference for the underlying real-time communication technology (e.g., WebRTC for direct peer-to-peer, or a more centralized approach where audio/video streams through the backend)?
+
+Once I have these details, I can provide a more precise breakdown of the code changes. Please let me know when you are ready to proceed, and remember to switch me to
+
+Act Mode (⌘⇧A) when you want me to start implementing the changes.
+
+i have some of the scripts like full followup script and no duplicacy script checking embedding i am bit concerned of the database modeling i want to keep things modular adn relationalional based on candidate id what you suggest should be my datababse strucutre?
+
+**Checkpoint
+
+Compare
+
+Restore
+
+API Request$0.0000
+
+Thinking:**Designing Database Schema** I'm currently fleshing out the database schema, focusing on modularity and the relational links stemming from the `candidate_id`. I'm integrating considerations for storing interview interactions and follow-up data. Key elements include incorporating "full followup script" data and preventing duplication via embedding similarity checks. The design emphasizes scalability to accommodate various interview stages.**Analyzing Mongo Schema** I'm now zeroing in on a MongoDB schema design, recognizing its non-relational nature. Key collections include `Users` (identified by `_id` as the `candidate_id`), `InterviewSessions` linking candidates to questions and responses, `InterviewQuestions`, and `InterviewResponses`. My plan is to integrate interview interactions, feedback, and "full followup script" data, ensuring scalability and preventing duplication using embedded data where appropriate.**Defining MongoDB Structure** My focus has shifted to constructing a MongoDB schema aligned with the requirements. I've designed collections: `Users` (keyed by `_id`, which functions as `candidate_id`), `InterviewSessions` linking candidates, `InterviewQuestions`, `InterviewResponses`, `FollowUpScripts`, and a consideration for `Embeddings`. I'm using `plan_mode_respond` to deliver a structure tailored for FastAPI and mindful of the relational demands, particularly surrounding follow-up scripts and duplicate content mitigation.‎
+
+Given your current setup likely uses MongoDB (based on `server/app/database/mongo.py`) and your need for modularity, relational aspects (especially around `candidate_id`), and handling "full followup script" and "no duplicacy script checking embedding," here's a suggested database structure:
+
+MongoDB is a NoSQL document database, so while it doesn't enforce strict relational integrity like SQL, we can achieve similar relationships and modularity using document embedding and referencing.
+
+__Core Principles for this Design:__
+
+1. __Candidate-Centric__: All interview-related data will ultimately link back to a `candidate_id` (which will be the `_id` of the `users` collection).
+2. __Modularity__: Separate collections for distinct entities (Users, Interviews, Questions, Responses) to keep documents manageable and queries efficient.
+3. __Referencing__: Use MongoDB's `DBRef` or manual referencing (storing `_id`s) to link documents across collections, mimicking relational joins.
+4. __Embedding for Performance__: Embed smaller, frequently accessed, and tightly coupled data (e.g., question text within an interview response) to reduce the number of queries.
+5. __Scalability__: Design for growth, especially considering embeddings and potentially large volumes of interview data.
+
+---
+
+__Suggested MongoDB Collections:__
+
+1. __`users` Collection (Candidates)__
+
+   - __Purpose__: Stores candidate profiles. This will be your central `candidate_id`.
+
+   - __Fields__:
+
+     - `_id`: ObjectId (Primary Key, serves as `candidate_id`)
+
+     - `email`: String (Unique)
+
+     - `name`: String
+
+     - `password_hash`: String
+
+     - `created_at`: Date
+
+     - `updated_at`: Date
+
+     - `roles`: Array of Strings (e.g., ["user", "admin"])
+
+     - `uploaded_documents`: Array of Objects (references to uploaded resumes/files)
+
+       - `file_id`: ObjectId (reference to a `files` collection if you store large files in GridFS or similar)
+       - `filename`: String
+       - `upload_date`: Date
+       - `content_summary`: String (brief summary of document content, useful for embeddings)
+       - `embedding`: Array of Numbers (vector embedding of the document content for similarity search)
+
+2. __`interview_sessions` Collection__
+
+   - __Purpose__: Represents a single interview taken by a candidate.
+
+   - __Fields__:
+
+     - `_id`: ObjectId
+
+     - `candidate_id`: ObjectId (Reference to `users._id`)
+
+     - `start_time`: Date
+
+     - `end_time`: Date (or `null` if ongoing)
+
+     - `status`: String (e.g., "in_progress", "completed", "cancelled")
+
+     - `role`: String (e.g., "Software Engineer", "Data Scientist")
+
+     - `difficulty`: String (e.g., "easy", "medium", "hard")
+
+     - `duration_minutes`: Number
+
+     - `total_score`: Number (Overall score for the interview)
+
+     - `feedback_summary`: String (Overall AI-generated feedback)
+
+     - `interview_type`: String (e.g., "AI_Agent", "Human_Interviewer")
+
+     - `questions_asked`: Array of Objects (Embedded or referenced, depending on complexity)
+
+       - `question_id`: ObjectId (Reference to `interview_questions._id`)
+       - `order`: Number
+       - `response_id`: ObjectId (Reference to `interview_responses._id` for this specific question's answer)
+
+3. __`interview_questions` Collection__
+
+   - __Purpose__: Stores the pool of interview questions. These can be pre-defined or dynamically generated and stored for future use/analysis.
+
+   - __Fields__:
+
+     - `_id`: ObjectId
+     - `text`: String (The actual question)
+     - `topic`: String (e.g., "Algorithms", "System Design", "Behavioral")
+     - `difficulty`: String
+     - `expected_keywords`: Array of Strings (Keywords the AI expects in a good answer)
+     - `ideal_answer`: String (Optional: for AI reference or human review)
+     - `embedding`: Array of Numbers (Vector embedding of the question text for similarity/duplicacy checks)
+     - `created_by`: ObjectId (Optional: if questions can be user-generated)
+     - `created_at`: Date
+
+4. __`interview_responses` Collection__
+
+   - __Purpose__: Stores a candidate's response to a specific question within an interview session, along with AI analysis.
+
+   - __Fields__:
+
+     - `_id`: ObjectId
+
+     - `session_id`: ObjectId (Reference to `interview_sessions._id`)
+
+     - `question_id`: ObjectId (Reference to `interview_questions._id`)
+
+     - `candidate_id`: ObjectId (Redundant but useful for direct queries)
+
+     - `response_text`: String (Transcribed text of the candidate's answer)
+
+     - `audio_file_path`: String (Path to the stored audio file, if applicable)
+
+     - `response_embedding`: Array of Numbers (Vector embedding of the candidate's response text)
+
+     - `ai_feedback`: String (Detailed feedback on this specific answer)
+
+     - `score`: Number (Score for this specific answer)
+
+     - `follow_up_questions`: Array of Objects (Embedded follow-up questions asked by the AI)
+
+       - `text`: String
+       - `response_text`: String (Candidate's answer to the follow-up)
+       - `feedback`: String
+       - `embedding`: Array of Numbers (for follow-up response)
+
+     - `timestamp`: Date (When the response was recorded)
+
+     - `duplicacy_score`: Number (Result from "no duplicacy script checking embedding" against other responses/ideal answers)
+
+     - `similarity_to_ideal`: Number (Similarity score of response_embedding to ideal_answer_embedding)
+
+5. __`follow_up_scripts` Collection (Optional, for complex scripts)__
+
+   - __Purpose__: If your "full followup script" is dynamic or configurable, you might store its logic or parameters here.
+
+   - __Fields__:
+
+     - `_id`: ObjectId
+     - `name`: String (e.g., "Standard Behavioral Follow-up", "Deep Dive Tech Follow-up")
+     - `script_logic`: String (e.g., Python code snippet, JSON configuration for the script)
+     - `description`: String
+     - `created_at`: Date
+
+---
+
+__How this addresses your concerns:__
+
+- __Modularity__: Each distinct entity (User, Interview Session, Question, Response) has its own collection.
+
+- __Relational based on `candidate_id`__: `candidate_id` is a direct reference in `interview_sessions` and can be included in `interview_responses` for easier querying.
+
+- __"Full Followup Script"__: The `follow_up_questions` array within `interview_responses` allows you to store the actual follow-up interactions. If the "script" itself is a complex, reusable piece of logic, the `follow_up_scripts` collection can store its definition.
+
+- __"No Duplicacy Script Checking Embedding"__:
+
+  - `response_embedding` in `interview_responses` will store the vector representation of the candidate's answer.
+  - `embedding` in `interview_questions` will store the vector representation of the question.
+  - You can then run your "no duplicacy script" by comparing `response_embedding` with other `response_embedding`s (within the same session or across sessions) or with `question_embedding`s to check for direct repetition or plagiarism. The `duplicacy_score` field can store the result of this check.
+  - Similarly, `similarity_to_ideal` can be calculated by comparing `response_embedding` with the `embedding` of an `ideal_answer` (if stored in `interview_questions` or a separate `ideal_answers` collection).
+
+__Next Steps for Implementation (Backend - `server/app/models` and `server/app/database`):__
+
+1. __Define Pydantic Models__: Create Python classes in `server/app/models/` (e.g., `interview_models.py`) that correspond to these MongoDB schemas. Use `ObjectId` from `bson` or `PydanticObjectId` if you're using `pydantic-extra-types` for type hinting.
+
+2. __Update `mongo.py`__:
+
+   - Add functions to connect to these new collections.
+   - Implement CRUD (Create, Read, Update, Delete) operations for each collection.
+   - Consider adding indexes for frequently queried fields like `candidate_id`, `session_id`, `question_id`, and `email`.
+
+Do these suggestions align with your vision for the AI agent and your existing scripts? Once we finalize the database structure, we can move on to defining the API endpoints and integrating the AI logic.
