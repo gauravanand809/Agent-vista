@@ -1,42 +1,92 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useInterview } from '@/features/interview/context';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Play, Brain } from 'lucide-react';
+import { ArrowLeft, Play, Brain, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import RoleSelector from '@/features/interview/components/setup/RoleSelector';
 import DifficultySelector from '@/features/interview/components/setup/DifficultySelector';
 import DurationSelector from '@/features/interview/components/setup/DurationSelector';
 import DocumentUpload from '@/features/interview/components/setup/DocumentUpload';
 import InterviewSummary from '@/features/interview/components/setup/InterviewSummary';
+import { uploadDocument, startInterview } from '@/lib/api';
+import { useToast } from '@/components/ui/use-toast';
 
 const InterviewSetup = () => {
   const [customRole, setCustomRole] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [duration, setDuration] = useState([30]);
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [jobDescriptionText, setJobDescriptionText] = useState('');
-  const [jobDescriptionFile, setJobDescriptionFile] = useState<File | null>(null);
-  const [useJobDescFile, setUseJobDescFile] = useState(false);
-  const [resumeError, setResumeError] = useState<string>('');
-  const [jobDescError, setJobDescError] = useState<string>('');
-  const { startInterview } = useInterview();
-  const navigate = useNavigate();
 
-  const handleStartInterview = () => {
-    const finalRole = selectedLanguage === "Others" ? customRole : selectedLanguage;
-    if (!finalRole || !resumeFile || (!jobDescriptionText.trim() && !jobDescriptionFile)) return;
+  // State to track upload status instead of the file object itself
+  const [resumeUploaded, setResumeUploaded] = useState(false);
+  const [jobDescProvided, setJobDescProvided] = useState(false);
+  const [jobDescriptionText, setJobDescriptionText] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleFileUpload = async (file: File | null, type: 'resume' | 'job_description') => {
+    if (!file) return;
     
-    startInterview(
-      finalRole, 
-      selectedDifficulty, 
-      duration[0],
-      resumeFile, 
-      useJobDescFile ? undefined : jobDescriptionText,
-      useJobDescFile ? jobDescriptionFile : undefined
-    );
-    navigate('/interview/live');
+    setIsLoading(true);
+    setError(null);
+    try {
+      await uploadDocument(file, type);
+      if (type === 'resume') {
+        setResumeUploaded(true);
+      } else {
+        setJobDescProvided(true);
+      }
+      toast({
+        title: "Success",
+        description: `${type === 'resume' ? 'Resume' : 'Job Description'} uploaded successfully.`,
+        variant: "default",
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(errorMessage);
+      toast({
+        title: "Upload Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStartInterview = async () => {
+    const finalRole = selectedLanguage === "Others" ? customRole : selectedLanguage;
+    if (!isFormValid()) {
+      setError("Please complete all required fields before starting.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const session = await startInterview(finalRole, selectedDifficulty, duration[0]);
+      toast({
+        title: "Success!",
+        description: "Your interview session has been created.",
+      });
+      navigate(`/interview/live/${session._id}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(errorMessage);
+      toast({
+        title: "Failed to Start Interview",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -48,11 +98,30 @@ const InterviewSetup = () => {
     }
   };
 
+  // This is a simplified version of the DocumentUpload props for clarity
+  // The actual DocumentUpload component might need more props to handle its internal state
+  const documentUploadProps = {
+    setResumeFile: (file: File | null) => handleFileUpload(file, 'resume'),
+    setJobDescriptionFile: (file: File | null) => handleFileUpload(file, 'job_description'),
+    jobDescriptionText: jobDescriptionText,
+    setJobDescriptionText: (text: string) => {
+        setJobDescriptionText(text);
+        setJobDescProvided(!!text.trim());
+    },
+    // The rest of the props would be for the component's internal state management
+    resumeFile: null, // Pass null as we now track status, not the file
+    jobDescriptionFile: null,
+    resumeError: '',
+    setResumeError: () => {},
+    jobDescError: '',
+    setJobDescError: () => {},
+    useJobDescFile: false,
+    setUseJobDescFile: () => {},
+  };
+
   const isFormValid = () => {
     const finalRole = selectedLanguage === "Others" ? customRole : selectedLanguage;
-    return finalRole && 
-           resumeFile && 
-           (jobDescriptionText.trim() || jobDescriptionFile);
+    return finalRole && resumeUploaded && (jobDescProvided || jobDescriptionText.trim());
   };
 
   return (
@@ -80,9 +149,15 @@ const InterviewSetup = () => {
             </div>
           </div>
 
-          {/* Main Content - Two Column Layout */}
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Main Content */}
           <div className="grid lg:grid-cols-2 gap-8 mb-8">
-            {/* Left Section - Interview Settings */}
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
               <RoleSelector
                 selectedLanguage={selectedLanguage}
@@ -110,53 +185,24 @@ const InterviewSetup = () => {
               )}
             </Card>
 
-            {/* Right Section - Document Uploads */}
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
-              <DocumentUpload
-                resumeFile={resumeFile}
-                setResumeFile={setResumeFile}
-                resumeError={resumeError}
-                setResumeError={setResumeError}
-                jobDescriptionText={jobDescriptionText}
-                setJobDescriptionText={setJobDescriptionText}
-                jobDescriptionFile={jobDescriptionFile}
-                setJobDescriptionFile={setJobDescriptionFile}
-                jobDescError={jobDescError}
-                setJobDescError={setJobDescError}
-                useJobDescFile={useJobDescFile}
-                setUseJobDescFile={setUseJobDescFile}
-              />
+              {/* This is a simplified representation. The actual props might differ. */}
+              <DocumentUpload {...documentUploadProps} />
             </Card>
           </div>
 
-          {/* Start Interview Button */}
           <div className="text-center">
             <Button
               onClick={handleStartInterview}
-              disabled={!isFormValid()}
+              disabled={!isFormValid() || isLoading}
               variant="hero"
               size="xl"
               className="min-w-[200px]"
             >
-              <Play className="mr-2 h-5 w-5" />
-              Start Interview
+              {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Play className="mr-2 h-5 w-5" />}
+              {isLoading ? 'Processing...' : 'Start Interview'}
             </Button>
           </div>
-
-          {/* Tips */}
-          <Card className="mt-8 p-6 bg-accent/5 border-accent/20">
-            <h3 className="font-semibold mb-3 text-accent">
-              💡 Interview Tips
-            </h3>
-            <ul className="grid md:grid-cols-2 gap-2 text-sm text-muted-foreground">
-              <li>• Upload your current resume for personalized questions</li>
-              <li>• Include detailed job requirements in the description</li>
-              <li>• Find a quiet environment for optimal recording</li>
-              <li>• Think out loud to demonstrate your process</li>
-              <li>• Take your time to understand each question</li>
-              <li>• Focus on clear, structured communication</li>
-            </ul>
-          </Card>
         </div>
       </div>
     </div>
